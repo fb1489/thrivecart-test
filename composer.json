@@ -1,0 +1,12 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^12.5",
+        "hamcrest/hamcrest-php": "^3.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/",
+            "Lib\\": "lib/"
+        }
+    }
+}
