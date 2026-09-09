@@ -6,7 +6,9 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "Lib\\": "lib/"
+            "Cart\\": "cart/",
+            "Lib\\": "lib/",
+            "Widgets\\": "widgets/"
         }
     }
 }
