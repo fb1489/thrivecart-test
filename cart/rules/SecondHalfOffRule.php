@@ -5,8 +5,8 @@ namespace Cart\Rules;
 use Cart\Cart;
 use Lib\MonetaryValue;
 use Override;
-use Widgets\ListOfWidgetCodes;
-use Widgets\ListOfWidgets;
+use Widgets\Widget;
+use Widgets\WidgetCode;
 
 class SecondHalfOffRule extends Rule {
 
@@ -15,28 +15,23 @@ class SecondHalfOffRule extends Rule {
     #[Override]
     public function beforeTotalling(Cart $cart): Cart
     {
+        $redWidget = Widget::createFrom(WidgetCode::R01);
         $this->discountValue = new MonetaryValue(0, $cart->currency());
 
-        $processedWidgets = new ListOfWidgets();
-        $alreadyDiscountedWidgetCodes = new ListOfWidgetCodes();
+        $numberOfRedWidgets = array_reduce(
+            $cart->widgets()->toArray(),
+            fn ($count, $widget) => $count + ($widget->code() === $redWidget->code() ? 1 : 0),
+            0
+        );
 
-        foreach ($cart->widgets()->toArray() as $widget) {
-            if ($alreadyDiscountedWidgetCodes->includes($widget->code())) {
-                continue;
-            }
+        if ($numberOfRedWidgets > 1) {
+            $halfPrice = new MonetaryValue(
+                round($redWidget->price()->value() / 2, 2),
+                $this->discountValue->currency()
+            );
 
-            if ($processedWidgets->includes($widget)) {
-                $halfPrice = new MonetaryValue(
-                    round($widget->price()->value() / 2, 2),
-                    $this->discountValue->currency()
-                );
-                $this->discountValue = $this->discountValue->add($halfPrice);
-                $alreadyDiscountedWidgetCodes->add($widget->code());
-            }
-
-            $processedWidgets->add($widget);
+            $this->discountValue = $this->discountValue->add($halfPrice);
         }
-
 
         return $cart;
     }

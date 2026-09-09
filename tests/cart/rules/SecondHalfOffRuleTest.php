@@ -16,7 +16,7 @@ use Widgets\WidgetCode;
 class SecondHalfOffRuleTest extends TestCase
 {
     #[Test]
-    public function it_adds_a_half_value_discount_when_there_are_two_of_the_same_item(): void
+    public function it_adds_a_half_value_discount_when_there_are_two_of_red_widget(): void
     {
         $cart = new Cart(Currency::USD);
         $widget = Widget::createFrom(WidgetCode::R01);
@@ -55,9 +55,28 @@ class SecondHalfOffRuleTest extends TestCase
 
         assertThat($rule->afterTotalling($totalValue)->value(), is(identicalTo($totalValue->value())));
     }
+    
+    #[Test]
+    public function it_does_not_add_any_discount_when_there_is_only_two_of_the_other_widgets(): void
+    {
+        $cart = new Cart(Currency::USD);
+        $greenWidget = Widget::createFrom(WidgetCode::G01);
+        $blueWidget = Widget::createFrom(WidgetCode::B01);
+
+        $cart->add($greenWidget->code());
+        $cart->add($greenWidget->code());
+        $cart->add($blueWidget->code());
+        $cart->add($blueWidget->code());
+
+        $rule = new SecondHalfOffRule();
+        $rule->beforeTotalling($cart);
+
+        $totalValue = $greenWidget->price()->add($blueWidget->price());
+        assertThat($rule->afterTotalling($totalValue)->value(), is(identicalTo($totalValue->value())));
+    }
 
     #[Test]
-    public function it_adds_a_half_value_discount_per_widget_when_there_are_two_of_the_same_item_for_each_widget(): void
+    public function it_adds_a_half_value_discount_only_for_the_red_widget_when_there_are_two_of_the_same_item_for_each_widget(): void
     {
         $cart = new Cart(Currency::USD);
         $redWidget = Widget::createFrom(WidgetCode::R01);
@@ -82,19 +101,13 @@ class SecondHalfOffRuleTest extends TestCase
             ->add($blueWidget->price());
 
         $redWidgetDiscountValue = new MonetaryValue($redWidget->price()->value() / 2, $redWidget->price()->currency());
-        $greenWidgetDiscountValue = new MonetaryValue($greenWidget->price()->value() / 2, $greenWidget->price()->currency());
-        $blueWidgetDiscountValue = new MonetaryValue($blueWidget->price()->value() / 2, $blueWidget->price()->currency());
-
-        $totalValueWithDiscount = $totalValueOfAllWidgets
-            ->subtract($redWidgetDiscountValue)
-            ->subtract($greenWidgetDiscountValue)
-            ->subtract($blueWidgetDiscountValue);
+        $totalValueWithDiscount = $totalValueOfAllWidgets->subtract($redWidgetDiscountValue);
 
         assertThat($rule->afterTotalling($totalValueOfAllWidgets)->value(), is(identicalTo($totalValueWithDiscount->value())));
     }
 
     #[Test]
-    public function it_adds_a_half_value_discount_only_for_a_widget_that_is_eligible_and_not_for_other_widgets_that_only_have_one_in_the_cart(): void
+    public function it_adds_a_half_value_discount_only_for_the_red_widget_that_is_eligible_and_not_for_other_widgets_that_only_have_one_in_the_cart(): void
     {
         $cart = new Cart(Currency::USD);
         $redWidget = Widget::createFrom(WidgetCode::R01);
@@ -121,7 +134,7 @@ class SecondHalfOffRuleTest extends TestCase
     }
 
     #[Test]
-    public function it_does_not_adds_a_half_value_discount_when_there_are_more_than_two_of_the_same_item(): void
+    public function it_only_applies_the_half_value_discounts_once_when_there_are_more_than_two_of_the_same_item(): void
     {
         $cart = new Cart(Currency::USD);
         $widget = Widget::createFrom(WidgetCode::R01);
