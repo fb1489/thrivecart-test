@@ -12,6 +12,11 @@ Thrivecart Technical Test
 # Running tests:
 - Run `vendor/bin/phpunit` from the base project directory
 
+# Running Cart Calculator:
+- Run `php index.php` from the base project directory
+- When prompted, enter any comma-separated list of widget codes (e.g. `R01, G01, G01`)
+- The script will output the total value
+
 ---
 
 ## Assumptions:
