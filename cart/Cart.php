@@ -2,6 +2,7 @@
 
 namespace Cart;
 
+use Cart\Rules\Rule;
 use Lib\Currency;
 use Lib\MonetaryValue;
 use Widgets\ListOfWidgets;
@@ -11,10 +12,12 @@ use Widgets\WidgetCode;
 class Cart {
 
     private ListOfWidgets $widgets;
+    private array $rules;
 
-    public function __construct(private Currency $currency)
+    public function __construct(private Currency $currency, Rule ...$rules)
     {
         $this->widgets = new ListOfWidgets();
+        $this->rules = $rules;
     }
 
     public function currency(): Currency
@@ -35,10 +38,18 @@ class Cart {
 
     public function total(): MonetaryValue
     {
-        $total = new MonetaryValue(0, $this->currency);
+        $cart = $this;
+        foreach ($this->rules as $rule) {
+            $cart = $rule->beforeTotalling($cart);
+        }
 
-        foreach ($this->widgets->toArray() as $widget) {
+        $total = new MonetaryValue(0, $cart->currency);
+        foreach ($cart->widgets->toArray() as $widget) {
             $total = $total->add($widget->price());
+        }
+
+        foreach ($this->rules as $rule) {
+            $total = $rule->afterTotalling($total);
         }
 
         return $total;

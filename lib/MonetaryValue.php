@@ -14,7 +14,7 @@ class MonetaryValue {
     }
 
     public function toDisplayFormat(): string {
-        return $this->currency->value . number_format($this->value, 2);
+        return $this->currency->value . number_format($this->value(), 2);
     }
 
     public function add(MonetaryValue $monetaryValue): MonetaryValue
