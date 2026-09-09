@@ -43,3 +43,5 @@ Thrivecart Technical Test
     - One concern I would have is that if values had more than 2 decimal points, should the rounding happen per item or per checkout (round before summing or after) because that could affect the final numbers.
  - Cart:
     - I would check if currencies are a concern / future idea, and determine if we need to build validation into the cart - e.g. can a cart contain products with a mix of currencies or can the cart only contain a single currency?
+    - A potential bug I noted down is what should happen when calculating the delivery fees for an empty cart? Presumably the system should not allow checking out of an empty cart, but it's worth noting and securing anyway.
+      - Though there are potential scenarios where a 0 value cart might be valid (a hypothetical scenario could be that the user had some deal that made the cart be free (0 value), but still needs to pay for delivery).
