@@ -17,6 +17,16 @@ class Cart {
         $this->widgets = new ListOfWidgets();
     }
 
+    public function currency(): Currency
+    {
+        return $this->currency;
+    }
+
+    public function widgets(): ListOfWidgets
+    {
+        return $this->widgets;
+    }
+
     public function add(WidgetCode $widgetCode): self
     {
         $this->widgets->add(Widget::createFrom($widgetCode));

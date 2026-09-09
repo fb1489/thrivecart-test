@@ -72,4 +72,31 @@ class MonetaryValueTest extends TestCase
         $this->expectException(CurrencyMismatchException::class);
         $onePound->add($oneDollar);
     }
+    
+    #[Test]
+    #[DataProvider('monetaryValuesSubtractDataProvider')]
+    public function add_subtracts_the_monetary_values(MonetaryValue $monetaryValue, MonetaryValue $monetaryValueToAdd, float $expectedValue): void
+    {
+        assertThat($monetaryValue->subtract($monetaryValueToAdd)->value(), is(identicalTo($expectedValue)));
+    }
+
+    public static function monetaryValuesSubtractDataProvider(): array
+    {
+        return [
+            "3 - 2 = 1" => [new MonetaryValue(3, Currency::USD), new MonetaryValue(2, Currency::USD), 1],
+            "3 - 1.5 = 1.5" => [new MonetaryValue(3, Currency::USD), new MonetaryValue(1.5, Currency::USD), 1.5],
+            "1,500 - 312.59 = 1,187.41" => [new MonetaryValue(1_500, Currency::USD), new MonetaryValue(312.59, Currency::USD), 1_187.41],
+            "3 - 1.125 rounds to 1.87" => [new MonetaryValue(3, Currency::USD), new MonetaryValue(1.125, Currency::USD), 1.87 ],
+        ];
+    }
+    
+    #[Test]
+    public function it_throws_CurrencyMismatchException_when_trying_to_subtract_monetary_values_with_different_currencies(): void
+    {
+        $onePound = new MonetaryValue(1, Currency::GBP);
+        $oneDollar = new MonetaryValue(1, Currency::USD);
+
+        $this->expectException(CurrencyMismatchException::class);
+        $onePound->subtract($oneDollar);
+    }
 }

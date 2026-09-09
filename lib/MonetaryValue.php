@@ -25,4 +25,13 @@ class MonetaryValue {
 
         return new MonetaryValue($this->value() + $monetaryValue->value(), $this->currency());
     }
+
+    public function subtract(MonetaryValue $monetaryValue): MonetaryValue
+    {
+        if ($this->currency() !== $monetaryValue->currency()) {
+            throw new Exceptions\CurrencyMismatchException("Cannot add together values from different currencies");
+        }
+
+        return new MonetaryValue($this->value() - $monetaryValue->value(), $this->currency());
+    }
 }
