@@ -4,6 +4,7 @@ namespace Cart\Rules;
 
 use Lib\MonetaryValue;
 use Override;
+use Widgets\WidgetFactory;
 
 class DeliveryFeesRule extends Rule {
 

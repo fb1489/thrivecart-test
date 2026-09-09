@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Widgets\WidgetFactory;
 
 #[CoversClass(DeliveryFeesRule::class)]
 class DeliveryFeesRuleTest extends TestCase
@@ -18,7 +19,7 @@ class DeliveryFeesRuleTest extends TestCase
     public function it_adds_a_delivery_fee_depending_on_the_value(MonetaryValue $total, float $expectedDeliveryCost): void
     {
         $totalWithDeliveryCost = $total->add(new MonetaryValue($expectedDeliveryCost, Currency::USD));
-        $rule = new DeliveryFeesRule();
+        $rule = new DeliveryFeesRule($this->createWidgetFactory());
         assertThat($rule->afterTotalling($total)->value(), is(identicalTo($totalWithDeliveryCost->value())));
     }
     
@@ -47,5 +48,10 @@ class DeliveryFeesRuleTest extends TestCase
             "$90.00 adds [OR OR OVER 90] delivery fee" => [new MonetaryValue(90, Currency::USD), DeliveryFeesRule::ON_OR_OVER_90],
             "$1,000,000,000.00 adds [OR OR OVER 90] delivery fee" => [new MonetaryValue(1_000_000_000, Currency::USD), DeliveryFeesRule::ON_OR_OVER_90],
         ];
+    }
+
+    private function createWidgetFactory(): WidgetFactory
+    {
+        return new WidgetFactory();
     }
 }

@@ -6,15 +6,15 @@ use Cart\Rules\Rule;
 use Lib\Currency;
 use Lib\MonetaryValue;
 use Widgets\ListOfWidgets;
-use Widgets\Widget;
 use Widgets\WidgetCode;
+use Widgets\WidgetFactory;
 
 class Cart {
 
     private ListOfWidgets $widgets;
     private array $rules;
 
-    public function __construct(private Currency $currency, Rule ...$rules)
+    public function __construct(private WidgetFactory $widgetFactory, private Currency $currency, Rule ...$rules)
     {
         $this->widgets = new ListOfWidgets();
         $this->rules = $rules;
@@ -32,7 +32,7 @@ class Cart {
 
     public function add(WidgetCode $widgetCode): self
     {
-        $this->widgets->add(Widget::createFrom($widgetCode));
+        $this->widgets->add($this->widgetFactory->createFromCode($widgetCode));
         return $this;
     }
 

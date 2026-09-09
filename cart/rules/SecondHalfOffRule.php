@@ -5,8 +5,8 @@ namespace Cart\Rules;
 use Cart\Cart;
 use Lib\MonetaryValue;
 use Override;
-use Widgets\Widget;
 use Widgets\WidgetCode;
+use Widgets\WidgetFactory;
 
 class SecondHalfOffRule extends Rule {
 
@@ -15,7 +15,7 @@ class SecondHalfOffRule extends Rule {
     #[Override]
     public function beforeTotalling(Cart $cart): Cart
     {
-        $redWidget = Widget::createFrom(WidgetCode::R01);
+        $redWidget = $this->widgetFactory->createFromCode(WidgetCode::R01);
         $this->discountValue = new MonetaryValue(0, $cart->currency());
 
         $numberOfRedWidgets = array_reduce(
